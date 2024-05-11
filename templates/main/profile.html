@@ -1,0 +1,85 @@
+{% extends "main/base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}PROFILE{% endblock %}
+{% block content %}
+<div class="d-flex">
+    <div class="container py-2 mx-2 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-10 col-xl-10">
+                <div class="card">
+                    <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
+                        <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                            {% if profile.profile_pic %}
+                            <img src="{{ profile.profile_pic.url }}" alt="profile pic" class="img-fluid img-thumbnail mt-4 mb-2"
+                                style="width: 150px; z-index: 1">
+                            {% else %}
+                            <img src="{% static "default_profile.png" %}" alt="profile pic" class="img-fluid img-thumbnail mt-4 mb-2"
+                                style="width: 150px; z-index: 1">
+                            {% endif %}
+                            {% if current_user == user %}
+                            <a class="btn btn-outline-dark" data-mdb-ripple-color="dark" href="{% url 'profile_edit' %}" style="z-index: 1;" name='edit_profile'>
+                                Edit profile
+                            </a>
+                            {% endif %}
+                        </div>
+                        <div class="ms-3" style="margin-top: 130px;">
+                            <h5>{{user.username}}</h5>
+                            <p>{{profile.work_at}}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 text-black" style="background-color: #f8f9fa;">
+                        <div class="d-flex justify-content-end text-center py-1">
+                            <div>
+                                <p class="mb-1 h5">{{post_num}}</p>
+                                <p class="small text-muted mb-0">Post</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 text-black">
+                        <div class="mb-5">
+                            <p class="lead fw-normal mb-1">About</p>
+                            <div class="p-4" style="background-color: #f8f9fa;">
+                                <p>{{profile.intro}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        {% for post in posts %}
+        <div class="card m-2 align-self-start col-lg-10">
+            <div class="row g-0"> 
+                <div class="card-header d-flex justify-content-between">
+                    <a class="text-decoration-none text-reset" href="{% url 'profile' post.author.id %}" name="profile">
+                        <strong>{{post.author.username}}</strong>
+                    </a>
+                    <a href="{% url "delete" post.id %}" class="btn btn-close"></a> 
+                </div>
+                <div class="card-body">
+                    <a class="text-decoration-none text-reset" href="{% url 'view_post' post.id %}" name="view"><h4 class="card-title">{{post.title}}</h4></a>
+                    <p class="card-text">{{post.description}}</p>
+                    <p class="card-text"><small class="text-muted">created at: {{post.created}}</small></p>
+                    <p class="card-text"><small class="text-muted">last update: {{post.updated}}</small></p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="badge rounded-pill bg-warning text-decoration-none">{{tag.name}}</a>
+                    {% for tag in post.tag_set.all %}
+                    <a href="#" class="badge rounded-pill bg-warning text-decoration-none">{{tag.name}}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        
+        <div class="card m-2 align-self-center col-lg-10">
+            <div class="card-body">
+                <p style="text-align: center">{{user.username}} has not posted anythings yet</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

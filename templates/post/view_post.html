@@ -1,0 +1,75 @@
+{% extends "main/base.html" %}
+{% load static %}
+{% block title %}VIEW POST{% endblock %}
+{% block content %}
+<div class="d-flex">
+    <div class="col-8">
+        <div class="card m-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between border-bottom border-warning">
+                    <div class="d-flex">
+                        {% if profile.profile_pic %}
+                        <img src="{{ profile.profile_pic.url }}" alt="profile pic" class="img-fluid img-thumbnail mt-2 mb-2"
+                            style="width: 100px; z-index: 1">
+                        {% else %}
+                        <img src="{% static "default_profile.png" %}" alt="profile pic" class="img-fluid img-thumbnail mt-2 mb-2"
+                            style="width: 100px; z-index: 1">
+                        {% endif %}
+                        <div class="ms-3" style="margin-top: 10px;">
+                            <a class="text-reset text-decoration-none" href="{% url 'profile' post.author.id %}"><h5>{{post.author.username}}</h5></a>
+                            <p>{{profile.work_at}}</p>
+                        </div>
+                    </div>
+                    {% if post.author == user %}
+                    <a href="{% url "edit_post" post.id %}" class="btn btn-outline-info align-self-start d-inline-flex mx-2">edit</a>
+                    {% endif %}
+                </div>
+                <div class="mt-2">  
+                    <h5 class="card-title">{{post.title}}</h5>
+                    <p>{{post.description}}</p>
+                    <a href="{{post.file.url}}" download class="btn btn-outline-primary">Download</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="card m-2 align-self-start" style="width: 100%;">
+            <div class="card-body">
+                <div class="border-bottom border-warning">
+                    <h5 class="card-title text-center">topics of article</h5>
+                </div>
+                <div class="mt-2">
+                    {% for tag in post.tag_set.all %}
+                        <p class="badge rounded-pill bg-warning">{{tag.name}}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-flex">
+    <div class="col-8 px-2">
+        <iframe class="embed-responsive-item" src="{{ post.file.url }}#toolbar=0&scrollbar=0" width="100%" height="900" style="border:1px solid ghostwhite;"></iframe>
+    </div>
+    <div class="col-4">
+        <div class="card m-2 align-self-start" style="width: 100%;">
+            <div class="card-body">
+                <h5 class="text-center card-title">you might also interested in</h5>
+            </div>
+        </div>
+        {% for similar_post in similar_posts %}
+            <div class="card m-2 align-self-start" style="width: 100%;">
+                <div class="card-header">
+                    <a class="text-decoration-none text-reset" href="{% url 'profile' similar_post.author.id %}" name="profile">
+                        <strong>{{similar_post.author.username}}</strong>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <a class="text-decoration-none text-reset" href="{% url 'view_post' similar_post.id %}" name="view"><h4 class="card-title">{{similar_post.title}}</h4></a>
+                    <p class="card-text">{{similar_post.description}}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "main/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}SEARCH{% endblock %}
+{% block content %}
+<div class='card m-3 p-3'>
+    <div class="d-flex align-self-start w-100 p-2">
+        <form method="post" class="d-flex w-100">
+            {% csrf_token %}
+            <input class="form-control me-2" type="search" placeholder="enter name of author, topic or article" aria-label="search" name="searched">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+{% if searched %}
+<div class="w-100 justify-content-center">
+    {% for post in posts %}
+    <div class="card mx-auto col-8 my-2">
+        <div class="card-header d-flex justify-content-between">
+            <a class="text-decoration-none text-reset" href="{% url 'profile' post.author.id %}" name="profile">
+                <strong>{{post.author.username}}</strong>
+            </a>
+            {% if user == post.author %}
+                <form method = 'post'>
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-close" name="post_id" value="{{post.id}}"></button>
+                </form>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <a class="text-decoration-none text-reset" href="{% url 'view_post' post.id %}" name="view"><h4 class="card-title">{{post.title}}</h4></a>
+            <p class="card-text">{{post.description}}</p>
+            <p class="card-text"><small class="text-muted">created at: {{post.created}}</small></p>
+            <p class="card-text"><small class="text-muted">last update: {{post.updated}}</small></p>
+        </div>
+        <div class="card-footer">
+            {% for tag in post.tag_set.all %}
+            <p class="badge rounded-pill bg-warning text-decoration-none">{{tag.name}}</p>
+            {% empty %}
+            <p class="badge rounded-pill bg-warning text-decoration-none">{{tag.name}}</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="card m-3">
+        <div class="card-body">
+            <p class="card-text text-center">no result</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card m-3">
+    <div class="card-body">
+        <p class="card-text text-center">search for post by entering post name, it's author or topics within it</p>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
